@@ -17,7 +17,16 @@ Execute the claude-code-sync tool to show sync status:
 
 Command to run:
 ```bash
-~/apps/claude-code-plugins/claude-code-sync/sync-claude.sh status
+# Find the installed plugin location
+PLUGIN_PATH=$(find ~/.claude/plugins/marketplaces -name "sync-claude.sh" -type f 2>/dev/null | head -1)
+
+# Run the status command
+if [ -n "$PLUGIN_PATH" ]; then
+    "$PLUGIN_PATH" status
+else
+    echo "Error: sync-claude.sh not found. Please install the claude-code-sync plugin first."
+    exit 1
+fi
 ```
 
 After completion, summarize the key information in a user-friendly format.

@@ -16,7 +16,16 @@ Execute the claude-code-sync tool to perform a full bidirectional sync:
 
 Command to run:
 ```bash
-~/apps/claude-code-plugins/claude-code-sync/sync-claude.sh sync
+# Find the installed plugin location
+PLUGIN_PATH=$(find ~/.claude/plugins/marketplaces -name "sync-claude.sh" -type f 2>/dev/null | head -1)
+
+# Run the sync command
+if [ -n "$PLUGIN_PATH" ]; then
+    "$PLUGIN_PATH" sync
+else
+    echo "Error: sync-claude.sh not found. Please install the claude-code-sync plugin first."
+    exit 1
+fi
 ```
 
 After completion, summarize:

@@ -17,7 +17,16 @@ Execute the claude-code-sync tool to push the current machine's configuration:
 
 Command to run:
 ```bash
-~/apps/claude-code-plugins/claude-code-sync/sync-claude.sh push
+# Find the installed plugin location
+PLUGIN_PATH=$(find ~/.claude/plugins/marketplaces -name "sync-claude.sh" -type f 2>/dev/null | head -1)
+
+# Run the push command
+if [ -n "$PLUGIN_PATH" ]; then
+    "$PLUGIN_PATH" push
+else
+    echo "Error: sync-claude.sh not found. Please install the claude-code-sync plugin first."
+    exit 1
+fi
 ```
 
 After completion, summarize:
