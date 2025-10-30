@@ -15,7 +15,8 @@ NC='\033[0m' # No Color
 
 # Configuration
 CLAUDE_DIR="$HOME/.claude"
-SYNC_REPO_URL="git@github.com:BioInfo/claude-code-sync.git"
+SYNC_REPO_OWNER="BioInfo"
+SYNC_REPO_NAME="claude-code-sync"
 SYNC_DIR="$HOME/.claude-sync"
 MACHINE_NAME=$(hostname -s)
 
@@ -52,22 +53,80 @@ check_git() {
     fi
 }
 
+# Function to check if gh CLI is installed and authenticated
+check_gh() {
+    if ! command -v gh &> /dev/null; then
+        print_error "GitHub CLI (gh) is not installed."
+        print_info "Install it with:"
+        print_info "  macOS:        brew install gh"
+        print_info "  Linux:        See https://github.com/cli/cli/blob/trunk/docs/install_linux.md"
+        print_info "  Raspberry Pi: curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg"
+        print_info "                echo \"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null"
+        print_info "                sudo apt update && sudo apt install gh"
+        exit 1
+    fi
+
+    # Check if authenticated
+    if ! gh auth status &> /dev/null; then
+        print_error "GitHub CLI is not authenticated."
+        print_info "Please authenticate with: gh auth login"
+        print_info "Choose 'HTTPS' as the protocol when prompted."
+        exit 1
+    fi
+
+    print_success "GitHub CLI authenticated"
+}
+
+# Function to get repository URL using gh CLI
+get_repo_url() {
+    # Use HTTPS URL with gh CLI credential helper
+    echo "https://github.com/${SYNC_REPO_OWNER}/${SYNC_REPO_NAME}.git"
+}
+
 # Function to initialize sync repository
 init_sync_repo() {
     print_info "Initializing sync repository..."
 
+    local repo_url=$(get_repo_url)
+
     if [ -d "$SYNC_DIR" ]; then
         print_warning "Sync directory already exists: $SYNC_DIR"
         cd "$SYNC_DIR"
+
+        # Configure git to use gh CLI credentials
+        git config credential.helper ""
+        git config --local credential.helper '!gh auth git-credential'
+
         git pull origin main 2>/dev/null || print_warning "Could not pull from remote"
     else
         print_info "Cloning sync repository..."
-        git clone "$SYNC_REPO_URL" "$SYNC_DIR" || {
-            print_error "Failed to clone repository. Creating new repository..."
+
+        # Clone using HTTPS with gh CLI credentials
+        GIT_TERMINAL_PROMPT=0 gh repo clone "${SYNC_REPO_OWNER}/${SYNC_REPO_NAME}" "$SYNC_DIR" 2>/dev/null || {
+            print_warning "Repository doesn't exist yet. Creating new repository..."
             mkdir -p "$SYNC_DIR"
             cd "$SYNC_DIR"
             git init
-            git remote add origin "$SYNC_REPO_URL" 2>/dev/null || true
+            git branch -M main
+
+            # Configure git to use gh CLI credentials
+            git config --local credential.helper '!gh auth git-credential'
+            git remote add origin "$repo_url" 2>/dev/null || true
+
+            # Create initial commit
+            echo "# Claude Code Sync" > README.md
+            echo "" >> README.md
+            echo "Machine-specific Claude Code configurations" >> README.md
+            mkdir -p machines shared
+            git add .
+            git commit -m "Initial commit" || true
+
+            # Create repository on GitHub if it doesn't exist
+            print_info "Creating repository on GitHub..."
+            gh repo create "${SYNC_REPO_OWNER}/${SYNC_REPO_NAME}" --private --source=. --remote=origin --push 2>/dev/null || {
+                print_warning "Could not create repository. It may already exist."
+                git push -u origin main 2>/dev/null || print_warning "Could not push to remote"
+            }
         }
     fi
 
@@ -256,9 +315,10 @@ Examples:
     $(basename "$0") sync      # Full sync (pull + push)
 
 Configuration:
-    Sync Repository: $SYNC_REPO_URL
+    Repository: ${SYNC_REPO_OWNER}/${SYNC_REPO_NAME}
     Sync Directory: $SYNC_DIR
     Machine Name: $MACHINE_NAME
+    Authentication: GitHub CLI (gh)
 
 EOF
 }
@@ -266,6 +326,7 @@ EOF
 # Main command handling
 main() {
     check_git
+    check_gh
 
     case "${1:-help}" in
         init)

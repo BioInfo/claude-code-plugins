@@ -23,13 +23,36 @@ Synchronize your Claude Code configurations across multiple machines seamlessly 
 ### Prerequisites
 
 - Git installed and configured
-- SSH keys set up for GitHub (recommended) or HTTPS authentication
+- **GitHub CLI (gh)** installed and authenticated
 - Claude Code installed
+
+### Installing GitHub CLI
+
+The sync tool uses GitHub CLI for authentication, which works seamlessly across all platforms without SSH key setup.
+
+**macOS:**
+```bash
+brew install gh
+```
+
+**Linux/Raspberry Pi:**
+```bash
+# Debian/Ubuntu/Raspberry Pi OS
+curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+sudo apt update && sudo apt install gh
+```
+
+**Authenticate GitHub CLI:**
+```bash
+gh auth login
+# Choose: GitHub.com → HTTPS → Login with a web browser
+```
 
 ### Quick Install
 
 ```bash
-# Clone the plugins repository
+# Clone the plugins repository (or install via /plugin in Claude Code)
 git clone https://github.com/BioInfo/claude-code-plugins.git ~/claude-code-plugins
 
 # Add to PATH (add to your ~/.bashrc or ~/.zshrc)
@@ -38,7 +61,7 @@ export PATH="$HOME/claude-code-plugins/claude-code-sync:$PATH"
 # Or create a symlink
 sudo ln -s ~/claude-code-plugins/claude-code-sync/sync-claude.sh /usr/local/bin/sync-claude
 
-# Initialize the sync repository
+# Initialize the sync repository (will create if it doesn't exist)
 sync-claude init
 ```
 
@@ -232,23 +255,30 @@ launchctl load ~/Library/LaunchAgents/com.bioinfo.claude-sync.plist
 
 ## Security Considerations
 
-- **SSH Keys**: Use SSH keys for GitHub authentication
-- **Private Repository**: Consider using a private repository for sensitive configurations
+- **GitHub CLI Authentication**: Uses GitHub CLI for secure, token-based authentication (no SSH keys needed)
+- **Private Repository**: The sync repository is created as private by default
 - **Secrets**: Never sync API keys or secrets (use environment variables instead)
 - **Backups**: Always created before pulling - stored in `~/.claude-backup-*`
 
 ## Troubleshooting
 
-### SSH Authentication Failed
+### GitHub CLI Not Authenticated
 
 ```bash
-# Test SSH connection
-ssh -T git@github.com
+# Check authentication status
+gh auth status
 
-# If failed, set up SSH keys
-ssh-keygen -t ed25519 -C "your_email@example.com"
-cat ~/.ssh/id_ed25519.pub  # Add to GitHub
+# If not authenticated, login
+gh auth login
+# Choose: GitHub.com → HTTPS → Login with a web browser
+
+# Verify authentication
+gh auth status
 ```
+
+### GitHub CLI Not Installed
+
+The script will provide installation instructions if gh is not found. Follow the instructions for your platform above.
 
 ### Merge Conflicts
 
