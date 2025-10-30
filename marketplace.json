@@ -1,31 +1,18 @@
 {
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "bioinfo-plugins",
+  "version": "1.0.0",
   "description": "Custom Claude Code plugins for enhanced development workflow",
   "owner": {
     "name": "BioInfo",
-    "email": "plugins@example.com",
-    "url": "https://github.com/BioInfo"
+    "email": "plugins@example.com"
   },
-  "version": "1.0.0",
-  "homepage": "https://github.com/BioInfo/claude-code-plugins",
-  "license": "MIT",
   "plugins": [
     {
       "name": "claude-code-sync",
-      "source": "./plugins/claude-code-sync",
       "description": "Synchronize Claude Code configurations across multiple machines using Git",
-      "version": "1.0.0",
-      "author": {
-        "name": "BioInfo",
-        "url": "https://github.com/BioInfo"
-      },
-      "keywords": [
-        "sync",
-        "configuration",
-        "git",
-        "backup",
-        "multi-machine"
-      ]
+      "source": "./plugins/claude-code-sync",
+      "category": "productivity"
     }
   ]
 }
