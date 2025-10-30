@@ -1,6 +1,35 @@
 # Claude Code Plugins
 
-A collection of plugins and utilities for [Claude Code](https://claude.com/claude-code) to enhance your development workflow.
+A plugin marketplace for [Claude Code](https://claude.com/claude-code) to enhance your development workflow.
+
+## Installation
+
+Add this marketplace to Claude Code:
+
+```bash
+# Add the marketplace (you'll be prompted to confirm)
+/plugin add-marketplace https://github.com/BioInfo/claude-code-plugins.git
+```
+
+Or add it manually by editing `~/.claude/plugins/known_marketplaces.json`:
+
+```json
+{
+  "bioinfo-plugins": {
+    "source": {
+      "source": "github",
+      "repo": "BioInfo/claude-code-plugins"
+    },
+    "installLocation": "/Users/YOUR_USER/.claude/plugins/marketplaces/bioinfo-plugins"
+  }
+}
+```
+
+Then install individual plugins:
+
+```bash
+/plugin install claude-code-sync
+```
 
 ## Available Plugins
 
@@ -18,11 +47,29 @@ Synchronize your Claude Code configurations across multiple machines seamlessly.
 - Intelligent conflict resolution
 - Machine-specific overrides
 
-**[Documentation →](./claude-code-sync/README.md)**
+**Slash Commands:**
+- `/sync-push` - Push local configuration to GitHub
+- `/sync-pull` - Pull configuration from GitHub
+- `/sync-full` - Full bidirectional sync
+- `/sync-status` - Show sync status
+- `/sync-list` - List all machine configurations
 
-## Installation
+**[Documentation →](./plugins/claude-code-sync/README.md)**
 
-Each plugin has its own installation instructions. See the individual plugin directories for details.
+## Plugin Development
+
+Each plugin should be in its own directory under `plugins/` with the following structure:
+
+```
+plugins/
+└── your-plugin/
+    ├── .claude-plugin/
+    │   └── plugin.json      # Required manifest
+    ├── commands/            # Optional slash commands
+    ├── agents/              # Optional custom agents
+    ├── skills/              # Optional skills
+    └── hooks/               # Optional hooks
+```
 
 ## Contributing
 
