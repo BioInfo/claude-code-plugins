@@ -6,10 +6,7 @@
     "name": "BioInfo",
     "url": "https://github.com/BioInfo"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/BioInfo/claude-code-plugins.git"
-  },
+  "repository": "https://github.com/BioInfo/claude-code-plugins.git",
   "license": "MIT",
   "keywords": [
     "sync",
