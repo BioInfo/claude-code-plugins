@@ -1,5 +1,6 @@
 {
-  "name": "BioInfo Plugins",
+  "name": "bioinfo-plugins",
+  "owner": "BioInfo",
   "description": "A curated collection of Claude Code plugins for development workflow enhancement",
   "version": "1.0.0",
   "author": {
@@ -12,11 +13,14 @@
   },
   "plugins": [
     {
-      "id": "claude-code-sync",
-      "name": "Claude Code Sync",
+      "name": "claude-code-sync",
       "description": "Synchronize Claude Code configurations across multiple machines using Git",
       "version": "1.0.0",
-      "path": "plugins/claude-code-sync",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/BioInfo/claude-code-plugins.git",
+        "path": "plugins/claude-code-sync"
+      },
       "keywords": [
         "sync",
         "configuration",
