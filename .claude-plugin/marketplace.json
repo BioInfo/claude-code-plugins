@@ -1,33 +1,36 @@
 {
   "name": "bioinfo-plugins",
-  "owner": "BioInfo",
-  "description": "A curated collection of Claude Code plugins for development workflow enhancement",
-  "version": "1.0.0",
-  "author": {
+  "owner": {
     "name": "BioInfo",
-    "url": "https://github.com/BioInfo"
+    "email": "noreply@github.com"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/BioInfo/claude-code-plugins.git"
+  "metadata": {
+    "description": "A curated collection of Claude Code plugins for development workflow enhancement",
+    "version": "1.0.0",
+    "pluginRoot": "plugins"
   },
   "plugins": [
     {
       "name": "claude-code-sync",
       "description": "Synchronize Claude Code configurations across multiple machines using Git",
       "version": "1.0.0",
-      "source": {
-        "type": "git",
-        "url": "https://github.com/BioInfo/claude-code-plugins.git",
-        "path": "plugins/claude-code-sync"
-      },
+      "source": "./claude-code-sync",
       "keywords": [
         "sync",
         "configuration",
         "git",
         "backup",
         "multi-machine"
-      ]
+      ],
+      "author": {
+        "name": "BioInfo",
+        "url": "https://github.com/BioInfo"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/BioInfo/claude-code-plugins.git"
+      },
+      "license": "MIT"
     }
   ]
 }
